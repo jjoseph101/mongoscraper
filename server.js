@@ -5,6 +5,7 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 var request = require("request");
 var cheerio = require("cheerio");
+var exphbs = require("express-handlebars");
 
 var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
@@ -18,13 +19,15 @@ app.use(logger("dev"));
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 
 // USE STATIC DIRECTORY
 app.use(express.static("public"));
 
 
 // DATABASE CONFIG
-mongoose.connect("mongodb://localhost/week18day3mongoose");
+mongoose.connect("mongodb://localhost/newscraper");
 var db = mongoose.connection;
 db.on("error", function(error) {
   console.log("Mongoose Error: ", error);
@@ -36,12 +39,12 @@ db.once("open", function() {
 //-ROUTES-
 // ROUTES: SCRAPE GOOGLE NEWS FOR BLOCKCHAIN VOTING ARTICLES
 app.get("/scrape", function(req, res) {
-	request("https://www.google.com/search?hl=en&gl=us&tbm=nws&authuser=0&q=blockchain+voting&oq=blockchain+voting&gs_l=news-cc.12..43j43i53.1423.2799.0.4301.17.9.0.8.8.1.115.680.7j2.9.0...0.0...1ac.1.Re9Do_NKWsQ", function(error, response, html) {
+	request("https://www.reddit.com/r/Bitcoin/", function(error, response, html) {
 		var $ = cheerio.load(html);
-		$("_cnc h3").each(function(i, element) {
+		$("p.title").each(function(i, element) {
 			var result = {};
-			result.title = $(this).children("a").text();
-			result.link = $(this).children("a").attr("href");
+			result.title = $(this).text();
+			result.link = $(element).children().attr("href");
 			var entry = new Article(result);
 			entry.save(function(err, doc) {
 				if (err) {
@@ -50,14 +53,15 @@ app.get("/scrape", function(req, res) {
 			});
 		});
 	});
-	res.send("Scrape Complete");
+	res.send("Scrape Complete!  Reload Homepage to see articles");
+	window.location.reload();
 });
 
 // ROUTES: GET ALL SCRAPED ARTICLES
 app.get("/articles", function(req, res) {
 	Article.find({}, function(error, doc) {
 		if (error) {
-			onsole.log(error);
+			console.log(error);
 		}
 		else {
 			res.json(doc);
