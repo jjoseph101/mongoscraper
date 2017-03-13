@@ -53,8 +53,7 @@ app.get("/scrape", function(req, res) {
 			});
 		});
 	});
-	res.send("Scrape Complete!  Reload Homepage to see articles");
-	window.location.reload();
+	res.render('scraper');
 });
 
 // ROUTES: GET ALL SCRAPED ARTICLES
