@@ -53,7 +53,7 @@ app.get("/scrape", function(req, res) {
 			});
 		});
 	});
-	res.render('scraper');
+	res.render('scraper',{title:"REDDIT'S BITCOIN SUB"});
 });
 
 // ROUTES: GET ALL SCRAPED ARTICLES
