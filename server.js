@@ -27,7 +27,7 @@ app.use(express.static("public"));
 
 
 // DATABASE CONFIG
-mongoose.connect("mongodb://localhost/newscraper");
+mongoose.connect("mongodb://heroku_tccb21n1:rfbmisegmqt848lbutmmil54dg@ds129010.mlab.com:29010/heroku_tccb21n1");
 var db = mongoose.connection;
 db.on("error", function(error) {
   console.log("Mongoose Error: ", error);
