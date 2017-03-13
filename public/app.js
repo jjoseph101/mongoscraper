@@ -22,6 +22,7 @@ $(document).on("click", "p", function() {
       $("#notes").append("<input id='titleinput' name='title' >");
       $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
       $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
+      $("#notes").append("<button data-id='" + data._id + "' id='delnote'>Delete Note</button>");
       if (data.note) {
         $("#titleinput").val(data.note.title);
         $("#bodyinput").val(data.note.body);
@@ -32,8 +33,6 @@ $(document).on("click", "p", function() {
 // SAVING NOTE
 $(document).on("click", "#savenote", function() {
   var thisId = $(this).attr("data-id");
-
-  // CHANGE NOTE
   $.ajax({
     method: "POST",
     url: "/articles/" + thisId,
@@ -46,8 +45,25 @@ $(document).on("click", "#savenote", function() {
       console.log(data);
       $("#notes").empty();
     });
+  $("#titleinput").val("");
+  $("#bodyinput").val("");
+});
 
-  // REMOVE VALUES RE NOTE ENTRY
+// DELETE NOTE
+$(document).on("click", "#delnote", function() {
+  var thisId = $(this).attr("data-id");
+  $.ajax({
+    method: "POST",
+    url: "/articles/" + thisId,
+    data: {
+      title: "",
+      body: ""
+    }
+  })
+    .done(function(data) {
+      console.log(data);
+      $("#notes").empty();
+    });
   $("#titleinput").val("");
   $("#bodyinput").val("");
 });
